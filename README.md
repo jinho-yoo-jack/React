@@ -1,5 +1,65 @@
 # React
 React Study and Job
+> 해당 글은 Learning React [Book] - O'Reilly ver.Eng 보고 작성한 것 입니다.
+
+## Environment 구축
+- Jack's Thinking<br>
+Babel은 ES6+코드를 ES5이하의 Syntax로 변환해주는 역할을 한다. 그래서 아직 지원하지 않는 "New Syntax"를 사용할 수 있게 해준다.<br>
+그렇다면 Node.js/Express에서 사용하게 된다면 router에 존재하는 \*.js 파일들을 변환해서 사용할 수 있게 해준다?<br>
+/app.js에서 routes 경로를 정의 해주는 부분에 정의를 해준다.
+
+1. *Transpiler* 
+- babel : Javascript compiler, ES6+의 new syntax를 순수 javascript code로 변환해주는 컴파일러다.
+- install Guide :
+```sh
+# Make Project Directory
+$ mkdir es6-project && cd es6-project
+# Create package.json
+$ npm init -y
+# Install @babel/core @babel/cli
+$ npm install --save-dev @babel/core @babel/cli
+
+# 만약에 install 중에 “No Xcode or CLT version detected” Error 발생 시에,
+# https://cleody.com/fix-no-xcode-or-clt-version-detected-when-running-npm-install/
+$ sudo rm -r -f /Library/Developer/CommandLineTools
+$ xcode-select --install
+```
+- Babel을 사용하여 ES6+ 코드를 ES5이하의 코드로 트랜스파일링하기 위해 Babel CLI 명령어를 사용할 수도 있으나 npm script를 사용하여 트랜스파일링 적용.
+1. package.json파일에 script를 추가한다.
+추가할 코드 : "build": "babel src/js(Target Folder) -w -d dist/js"
+```json
+{
+  "name": "react",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "babel src/js -w -d dist/js"
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "ejs": "~2.6.1",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
+  }
+}
+```
+
+
+
+
+2. *Module Bundler* Webpack : 번들링하는 모듈 번들러. Webpack을 사용하면 의존 모듈이 하나의 파일로 번들링되므로 별도의 모듈 Loader 필요 없어지게 된다.
+
+
 ## Welcome to React
 * Who are You? React.
 - 리액트는 User Interface(UI)에 사용하기 위해 만들어진 라이브러리이다.
@@ -237,8 +297,8 @@ scream('scream invokes that returned function');
 - 절차적으로 코드를 작성하게 되면 그에 해당하는 설명을 열심히 주석으로 처리를 해야한다. 그런데 선언적 함수형 프로그래밍을 하게 되면 그것 자체로 어떠한 동작을 하는지에 대한 선언이 되어 있다.
 
 ## Functional Concepts
-- Immutability 불변성, Purity 순수성, Data transformation 데이터 변환, Higher-order-functions, and Recursion 재귀.
-* Immutability
+- Immutability 불변성, Purity 순수성, Data transformation 데이터 변환, Higher-order-functions, and Recursion 재귀호출<br>
+* Immutability<br>
 - 'Uncahnageable', 변할수 없는, data는 변할 수 없다. data은 절대 변할 수 없다.<br>
 - 원본의 데이터는 그대로 살려두고 복사본을 만들어서 데이터를 수정하고 그것을(copies of those data structures) 사용한다.<br>
 (Instead of changing tho original data structures, we *build changed copies of those data structures and
@@ -298,21 +358,88 @@ var addColor = function(title, colors){
   return colors;
 };
 
+console.log(addColor('Glam Green', list).length); // 4
+console.log(list.length); // 4
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+// Array.push is not an immutable function.
+// addColor 함수는 original array를 변경한다. adding another field
+// 그래서 우리는 Array.concat를 사용해야만 한다.
+const addColor = (title, colors) => array.concat({title});
+
+console.log(addColor('Glam Green', list).length); // 4
+console.log(list.length); // 3
+
+// Array.concat concatenates arrays. In this case, it take a new Object, with a new color title,
+// and adds it to a copy of the original array.
+// New ES6 syntax
+// "{title}" 코드는 "{title : "title"}과 동일한 syntax
+const addColor = (title, list) => [...list, {title}];
+let newList = addColor('newColor', list);
+console.log(newList); // 4
+console.log(list); // 3
 ```
+* Pure Functions
+- return a value that is computed based on its arguments.
+- Take at least one argument, and always return a value or another function.
+(아무리 적어도, 하나의 인자 값을 가지고 항상 값을 리턴한다. 값이나, 함수형태의 값을
+- 전역변수나, application의 상태에 어떠한 영향도 미치지 않는다.
+- Pure Function 선언 시 지켜야 할 규칙 3가지<br>
+  1. The function should take in at least one argument.<br>
+  2. The function should return a value or another function.<br>
+  3. The function should not change or mutate any of its arguments.<br>
+```javascript
+// #1. inpure Functions
+var frederick = {
+  name : 'Fredericks Douglass',
+  candRead : false,
+  canWrite : false
+};
+
+function selfEducate(){
+  frederick.canRead = true;
+  frederick.canWrite = true;
+  return frederick
+};
+
+selfEducate();
+
+console.log(frederick);
+
+// #2. pure function
+const frederick = {
+  name : 'Fredericks Douglass',
+  candRead : false,
+  canWrite : false
+};
+
+// 이 함수는 argument를 기반으로 연산을 수행하고 하나의 argument를 가지고 있으며 하나의 새로운 person객체를 리턴한다.
+// 전달받은 argument의 mutating이 없고, has no side effect
+const selfEducate = person => ({
+  ...person,
+  person.canRead = true,
+  person.canWrite = true
+});
+
+console.log(selfEducate(frederick)); // print 'name : Frdericks Douglass, canRead : true, canWrite : true'
+console.log(frederick); // print 'name : Frdericks Douglass, canRead : false, canWrite : false'
+
+// Examine an impure function that mutates the DOM;
+function Header(text){
+  let h1 = document.createElement('h1');
+  h1.innerText = text;
+  document.body.appendChild(h1);
+};
+
+Header("Header() caused sid effects");
+
+// @React, The UI is expressed with pure function. 
+// React에서 UI는 순수한 기능으로 표현됩니다. 다음 샘플에서 헤더는 이전 예제와 같은 요소 인 제목을 만드는 데 사용할 수있는 순수한 함수입니다. 
+// 그러나 이 함수 자체는 DOM을 변경하지 않기 때문에 부작용을 일으키지 않습니다. 이 함수는 heading-one 요소를 생성하며 해당 요소를 사용하여 
+// DOM을 변경하는 것은 응용 프로그램의 다른 부분에 달려 있습니다.
+const Header = (props) => <h1>{props.title}</h1>;
+```
+
+* Data Transformations
+- 그렇다면 데이터가 불변하다면, Application의 변화를 어떻게 할 줄 수 있는가?
+- 함수형 프로그래밍은 *데이터를 한 형태(One Form)에서 다른 형태(Another Form)으로로 변환*하는 것입니다.
+- We will produce 
