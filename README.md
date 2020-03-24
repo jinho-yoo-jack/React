@@ -2,6 +2,26 @@
 React Study and Job
 > 해당 글은 Learning React [Book] - O'Reilly ver.Eng 보고 작성한 것 입니다.
 
+## React 이론
+1. Hello React
+2. Component Class and Function(Hooks)
+3. Props(=Properties)
+4. State
+5. Syntax JSX
+6. Component Lifecycle Event
+* 라이프사이클 이벤트란?(Lifecycle Event)
+- 컴포넌트를 좀 더 세밀하게 제어하기 위한 방법으로 컴포넌트 인스턴스 생성 전에 필요한 로직을 구현한 후 새로운 속성을 제공해서 인스턴스를 재생성하는 방법을
+생각해볼 수 있지만, 이 방법으로는 *독립적인 컴포넌트*를 생성할 수 없다.
+- 가장 좋은 방법은 컴포넌트 라이프사이클 이벤트(Lifecycle Event)를 사용하는 것이다.
+- 마운팅(Mounting) 이벤트를 이용해서 컴포넌트에 필요한 로직을 주입(Injection)할 수 있다. 그외에도 다른 이벤트를 이용한다면, 뷰(View)가 렌더링하는 것을
+결정하는 특별한 로직을 제공해서 좀 더 똑똑한 컴포넌트를 만들 수 있다.
+* 이벤트 종류
+- 마운트 이벤트(Mounting Event) : React Element를 DOM 노드에 추가할 때 발생하는 이벤트.
+- 갱신 이벤트(Updaing Event) : 속성이나 상태가 변경되어 React 엘리먼트를 갱신할 때 발생하는 이벤트.
+- 언마운팅 이벤트(Unmounting Event) : React 엘리먼트를 DOM에서 제거할 때 발생하는 이벤트
+
+
+
 ## Environment 구축
 - Jack's Thinking<br>
 Babel은 ES6+코드를 ES5이하의 Syntax로 변환해주는 역할을 한다. 그래서 아직 지원하지 않는 "New Syntax"를 사용할 수 있게 해준다.<br>
