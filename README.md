@@ -19,7 +19,73 @@ React Study and Job
 - 마운트 이벤트(Mounting Event) : React Element를 DOM 노드에 추가할 때 발생하는 이벤트.
 - 갱신 이벤트(Updaing Event) : 속성이나 상태가 변경되어 React 엘리먼트를 갱신할 때 발생하는 이벤트.
 - 언마운팅 이벤트(Unmounting Event) : React 엘리먼트를 DOM에서 제거할 때 발생하는 이벤트
+* Class Type Lifecycle event 실행 순서
+- constructor() : 엘리먼트를 생성하여 기본속성(Properties)와 상태(State)를 설정할 때 실행된다.<br>
+*[Mount]*<br>
+- componentWillMount() : DOM에 삽입하기 전에 실행된다.<br>
+- componentDidMount() : DOM에 삽입되어 렌더링이 완료된 후 실행된다.<br>
+- 실행 단계 : constructor --> componentWillMount() --> render() --> componentDidMount()<br>
+*[Update]*<br>
+- componetWillReceiveProps(nextProps) : 컴포넌트가 속성을 받기 직전에 실행된다.<br>
+- shouldComponentUpdate(nextProps, nextState) : 컴포넌트가 갱신되는 조건을 정의해서 재렌더링을 최적화할 수 있다. Bool 값을 반환한다.<br>
+- componetWillUpdate(nextProps, nextState) : 컴포넌트가 갱신되기 직전에 실행된다.<br>
+- 컴포넌트 속성 갱신 : componentWillReceiveProps() --> shouldComponentUpdate() --> componentWillUpdate() --> render() --> componentDidUpdate()
+- 컴포넌트 상태 갱신 : shouldComponentUpdate() --> componentWillUpdate() --> render() --> componentDidUpdate()
+*[Unmount]*<br>
+- componentWillUnmount() : 컴포넌트를 DOM에서 제거하기 전에 실행되며, 구독한 이벤트를 제거하거나 다른 정리 작업을 수행한다.<br>
+- 실행 순서 : componentWillUnmount();
+![스크린샷 2020-03-23 오후 6 17 10](https://user-images.githubusercontent.com/58014147/77434073-a470fb80-6e23-11ea-920e-6cb116c64653.png)
 
+* Functional Type Lifecycle
+- Hooks을 사용하여 단순 Display용으로 사용하던 함수형 컴포넌트에서 'State'와 'LifeCycle', 'Reference'등의 클래스형 Component의 기능의 구현한 개념.
+- 또한 Memoization등의 기능 또한 포함되어 클래스형보다 더 *직관적*이라는 장점을 가지고 있다.
+- const \[_stateVariable, _setStateFunction]\ = useState(...initStateValue)<br>
+: 함수형 컴포넌트에서 React의 State의 값을 사용할 수 있게 해주는 Hooks의 핵심 인터페이스이며, useState()의 첫번째 인자로 State의 초기값을 설정 할 수 있다.
+```javascript
+//#Set StateVariable
+const [count, setCount] = useState(0);
+const [fruit, setFruit] = useState('banana');
+const [todos, setTodos] = useState({text : 'Learn Hooks'});
+```
+- useEffect(_callback, _arrayStateVariable) <br>
+: Hooks을 통해 함수형 컴포넌트는 Lifecycle을 구현할 수 있다. 클래스형 컴포넌트와 다르게, Hooks에서는 useEffect로 Lifecycle을 관리 할 수 있다. 기본적으로 *render()* 가 실행되면 *useEffect* 가 함께 실행된다고 보면 된다. 그리고 Return되는 callBack을 통해 *componentWillUnmount()* 를 구현할 수 있다.<br>실제로는 모든 render요청에 대해, useEffect가 실행되니 사실 이 method의 퍼포먼스는 중요하다. 이를 위해 *useEffect*의 두번째 인자로 변경 사항이 있는 값들을 배열로 할당하여 해당 값들이 변경될 때만 Effect를 실행하게 할 수 있다.
+```javascript
+function HksLifecycle() {
+    const [count, setCount] = useState(0);
+
+    // useEffect, First Parameter is CallBack function
+    useEffect(() => {
+            // 컴포넌트가 마운트 되고, setTimeout 함수를 호출한다.
+            setTimeout(() => {
+                document.title = `You Clicked ${count} times`;
+            }, 3000);
+        },
+        [count]); // <-- Second Parameter is 'StateVariable'
+                        //  이렇게 하면 useEffect는 count state를 지켜보다가 count가 갱신되면 첫번째 callBack를 실행하게 된다.
+                        //  변경 사항이 있는 값들(State) 배열로 보내어, 해당 값들이 변경될 때만 useEffect를 실행하게 만들면 된다.
+        //[]); //<--- Second Parameter is 'Empty Array'
+                  // useEffect 함수를 마운트되고 한번만 실행하게 하려면 두번째 인자로 빈 배열을 넣어주면 된다.
+                  // 그렇지 않으면 state 값이 업데이트 될 경우 다시 한번 Rendering 해준다.
+
+    return(
+        <div>
+            <p>You Clicked {count} times</p>
+            <button onClick={() => setCount(count+1)}>
+                Click Me
+            </button>
+        </div>
+    )
+};
+
+export default Lifecycle;
+```
+
+
+
+* 마운팅 이벤트(Mounting Event)
+- 마운팅 이벤트 유형은 모두 실제 DOM에 컴포넌트를 추가하는 것에 대한 이벤트다.
+- componentWillMount()
+컴포넌트 라이프사이클에서 componentWillMount()는 *단 한번만* 실행된다. 실행 시점은 초기 렌더링 직전이다.ReactDOM.render()를 호출해서 React 엘리먼트를 브라우저에 렌더링하는 시점에서 componentWillMount()가 실행된다. 
 
 
 ## Environment 구축
