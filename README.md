@@ -82,7 +82,42 @@ export default Lifecycle;
 ```
 - useRef(ClassType: React.createRef())
  함수형 컴포넌트 내에서 컴포넌트 Reference를 참조 할 수 있다. 또한 단순한 DOM이나 컴포넌트를 참조하는 것이 아니라, 클래스 컴포넌트의 인스턴스처럼 사용 할 수 있다.하지만 초기에만 실행 시켜줄 수 있는 콜백형식으로 전달하지 못하기 때문에 아래와 같이 setInterval에 레퍼런스를 할당하고자 할때에는 useEffect등을 이용해서 별도로 설설정해야 한다.<br>
- 컴포넌트를 작성하다 보면 태그(Tag)를 직접 다루어야 하는 경우가 존재한다. *document.getElementById* 메서드로 직접 DOM의 Element를 불러와서 사용할 수 있다.
+ 컴포넌트를 작성하다 보면 태그(Tag)를 직접 다루어야 하는 경우가 존재한다. *document.getElementById* 메서드로 직접 DOM의 Element를 불러와서 사용할 수 있다. 또는 스크롤바의 위치를 가져와야 하는 경우, 또는 width/height 값을 가져와야하는 경우 사용하면 된다.
+```javascript
+import React, {useState, useRef} from 'react';
+
+function InputSample(){
+    const [inputs, setInputs] = useState({
+        name : '',
+        nickname : ''
+        });
+    const {name, nicknamne} = inputs;
+    const nameInputBox = useRef();
+    
+    const onChange = (event) => {
+        const {name, value} = event.target;
+        setInputs({
+            ...inputs,
+            [name] : value
+        });
+        // 이렇게 ReactDOM에 선언한 ref객체(Element)에 직접적으로 접근할 수 있다.
+        nameInputBox.current.focus();
+    };
+    
+    return(
+        <div>
+            <input
+                name='name'
+                value={name} // State의 Variable인 inputs의 name 값으로 할당.
+                ref={nameInputBox} // useRef()으로 생성한 ref객체를 할당.
+                onChange={onChange} // onChange 이벤트 구독 및 Handler 할당.
+            />
+        </div>
+    )
+
+}
+```
+
 - useContext
 - useMemo & useCallback
 *useMemo*,*useCallback*은 memoize를 함수형 컴포넌트에서 사용할 수 있도록 만들어진 기능이다. 둘의 사용처는 비슷한데 차이점은 *useMemo*는 [계산된 값]을 가지고 있고 *useCallback*은 콜백으로 실행 할 수 있다는 차이를 가지고 있다. 두 API 다 첫번째 인자로 값을 리턴하는 콜백을 가져오고, 두번째 인자로 변경 여부를 평가하는 값들의 배열을 가져온다.
