@@ -4,7 +4,9 @@ React Study and Job
 
 ## React 이론
 1. Hello React
-2. Component Class and Function(Hooks)
+- 리액트는 선언형(Declaration) 컨셉으로 개발되었기 때문에, 진행순서에 초점을 맞춘 명령형 타입과 다르게, *결과 값*에 초점을 맞춰져 있다.
+그래서 개발자가 View를 Controll 할 필요가 없고, ReactDOM의 State가 변경되면 자동으로 React가 리렌더링(Re-rendering) 한다.
+2. Component Class and Function(+Hooks)
 3. Props(=Properties)
 4. State
 5. Syntax JSX
