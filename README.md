@@ -83,6 +83,11 @@ function HksLifecycle() {
 export default Lifecycle;
 ```
 - useRef(ClassType: React.createRef())
+what is 'ref'?
+- 리액트 프로젝트 내부에서 DOM에 이름을 다는 방법을 Reference(ref)라고 한다.
+why used 'ref'?
+- *DOM을 꼭 직접적으로 건드려야 할 때* 사용한다.
+
  함수형 컴포넌트 내에서 컴포넌트 Reference를 참조 할 수 있다. 또한 단순한 DOM이나 컴포넌트를 참조하는 것이 아니라, 클래스 컴포넌트의 인스턴스처럼 사용 할 수 있다.하지만 초기에만 실행 시켜줄 수 있는 콜백형식으로 전달하지 못하기 때문에 아래와 같이 setInterval에 레퍼런스를 할당하고자 할때에는 useEffect등을 이용해서 별도로 설설정해야 한다.<br>
  컴포넌트를 작성하다 보면 태그(Tag)를 직접 다루어야 하는 경우가 존재한다. *document.getElementById* 메서드로 직접 DOM의 Element를 불러와서 사용할 수 있다. 또는 스크롤바의 위치를 가져와야 하는 경우, 또는 width/height 값을 가져와야하는 경우 사용하면 된다.
 ```javascript
