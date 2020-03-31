@@ -205,6 +205,7 @@ export default ListExample;
 - key값 설정
  key값을 설정할 때는 map 함수의 인자로 전달되는 함수 내부에서 컴포넌트 props를 설정하듯이 설정하면 된다. key 값은 언제나 유일해야 한다. 따라서 데이터가 가진 고유값을 key 값으로 설정해야 한다.
  게시판의 게시물을 렌더링한다면 게시물 번호(ID)를 key 값으로 설정한다.
+ 
 ```javascript
 const articleList = articles.map(article => (
     <Article
@@ -213,8 +214,6 @@ const articleList = articles.map(article => (
         key={article.id}
     />
 ));
-
-
 ```
 - 응용
  inputbox와 button 각각 1개 씩 추가한다. inputBox에 기입한 Text를 button을 클릭하게 되면 List(ul)태그에 li태그로 추가한다.<br>
@@ -269,8 +268,13 @@ const ListUp = () => {
         setInputText('');
     }
 
+    const handleLiClick = id => {
+        const nextNames = names.filter(name => name.id !== id);
+        setNames(nextNames);
+    };
+
     const namesList = names.map((name) => {
-        return <li key={name.key}>{name.text}</li>
+        return <li onClick={() => handleLiClick(name.id)} key={name.key}>{name.text}</li>
         //return <List key={name.id}>{name.text}</List>
     });
 
