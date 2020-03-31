@@ -3,14 +3,51 @@ React Study and Job
 > 해당 글은 Learning React [Book] - O'Reilly ver.Eng 보고 작성한 것 입니다.
 
 ## React 이론
-1. Hello React
+### 1. Hello React
 - 리액트는 선언형(Declaration) 컨셉으로 개발되었기 때문에, 진행순서에 초점을 맞춘 명령형 타입과 다르게, *결과 값*에 초점을 맞춰져 있다.
 그래서 개발자가 View를 Controll 할 필요가 없고, ReactDOM의 State가 변경되면 자동으로 React가 리렌더링(Re-rendering) 한다.
-2. Component Class and Function(+Hooks)
-3. Props(=Properties)
-4. State
-5. Syntax JSX
-6. Component Lifecycle Event
+### 2. Component Class and Function(+Hooks)
+### 3. Props(=Properties)
+### 4. State
+### 5. Syntax JSX
+### 6. Component Lifecycle Event(Only Type Class Component)<br>
+ 모든 리액트 컴포넌트에는 라이프사이클(Lifecycle, 생명주기)가 존재한다. 컴포넌트의 수명은 페이지에 렌더링되기 전인 "준비 과정(componentWillMount)"에서 시작하여 페이지에서 "사라질 때" 끝난다(componentWillUnmount).<br>
+ 리액트 프로젝트를 진행하다 보면 가끔 컴포넌트를 처음으로 렌더링할 때 "어떤 작업"을 선처리해야 하거나, 컴포넌트를 업데이트하기 전후로 어떤 작업을 처리해야 할 수도 있고, 또 불필요한 업데이트를 방지해야 할 수 있다. 이럴때 리액트에서 *라이프사이클 메소드(Lifecycle Method)* 를 사용하면 된다.<br>
+ - 라이프사이클 메소드의 이해<br>
+ 메서드의 종류는 "마운트", "업데이트", "언마운트"로 총 3가지로 나뉘며, 접두사는 will, did를 사용한다. will은 어떤 작업을 작동하기 전에 실행되는 메서드이고, did는 어떤 작업을 작동한 후에 실행되는 메서드이다. 라이프사이클은 클래스형 컴포넌트에서만 지원되고, overloading해서 사용한다. 함수형 컴포넌트에서는 Hooks API의 useEffect를 사용해서 구현할 수 있다.<br>
+#### 마운트(Mount)<br>
+ DOM이 생성되고 웹 브라우저상에 나타나는 것을 마운트(mount)라고 한다.<br>
+ : \[호출 순서\]<br>
+ 1. Create React Component<br>
+ 2. Call Class Constructor() : 컴포넌트를 새로 만들 때마다 호출되는 클래스 생성자 메서드<br>
+ 3. Call getDerivedStateFromProps() : propos에 있는 값을 state에 넣을 때 사용되는 메서드<br>
+ - props로 받아 온 값을  state에 동기화시키는 용도 사용, 컴포넌트가 마운트될 때와 업데이트 될 때 호출 된다.
+ 4. Call render() : 준비한 UI를 렌더링하는 메서드<br>
+ 5. componentDidMount() : 컴포넌트가 웹브라우저상에 나타난 후 호출하는 메서드<br>
+ - 컴포넌트를 만들고, 첫 렌더링을 다 마친 후 실행한다. 이 부분에서 함수를 호출하거나, 이벤트를 등록하거나, setTimeout, 네트워크 요청(Ajax호출) 같은 비동기작업을 처리하면 된다.
+#### 업데이트(Update)<br>
+ : 컴포넌트는 다음과 같은 총 4가지 경우에 컴포넌트를 업데이트 한다.<br>
+ 1. props가 바뀔 때<br>
+ - Parent Componentdptj 넘겨주는 props가 바뀌면, 컴포넌트 리렌더링이 이루어진다.
+ 2. state가 바뀔 때<br>
+ - 자신이 들고 있는 state가 setState를 통해 업데이트 될 때 리렌더링이 이루어진다.
+ 3. 부모 컴포넌트가 리렌더링(Re-rendering) 될 때<br>
+ 4. this.forceUpdate()로 강제 렌더링을 트리거 할 때<br>
+ 
+ : \[호출 순서\]<br>
+ 1. Change props or state<br>
+ 2. Call getDerivedStateFromProps()<br>
+ 3. shouldComponentUpdate() : 컴포넌트가 리렌더링을 해야 할지 말아야 할지를 결정하는 메서드<br>
+ 4. 3번의 결과가 "True"일 경우, Call render() : 컴포넌트 리렌더링 메서드<br>
+ 5. getSnapshotBeforeUpdate() : 컴포넌트 변화를 DOM에 반영하기 바로 직전에 호출하는 메서드<br>
+ render에서 만들어진 결과물이 브라우저에 실제로 반영되기 직전에 호출된다. 이 메서드에서 반환하는 값은 componentDidUpdate()에서 3번째 파라미터인 snapshot 값으로 전달 받을 수 있는데, 주로 업데이트하기 직전의 값을 참고할 일이 있을 때 사용한다.(Ex, ScrollBar 위치 유지)<br>
+ ==== 웹 브라우저상의 실제 DOM 변화 ====<br>
+ 6. componentDidUpdate() : 컴포넌트의 업데이트 작업이 끝난 후 호출하는 메서드<br>
+ 
+#### 언마운트(Unmount)<br>
+ : \[호출 순서\]<br>
+ 1. componentWillUnmount() : 컴포넌트가 웹 브라우저상에서 사라지기 전에 호출하는 메서드<br>
+ 
 * 라이프사이클 이벤트란?(Lifecycle Event)
 - 컴포넌트를 좀 더 세밀하게 제어하기 위한 방법으로 컴포넌트 인스턴스 생성 전에 필요한 로직을 구현한 후 새로운 속성을 제공해서 인스턴스를 재생성하는 방법을
 생각해볼 수 있지만, 이 방법으로는 *독립적인 컴포넌트*를 생성할 수 없다.
@@ -38,10 +75,11 @@ React Study and Job
 - 실행 순서 : componentWillUnmount();
 ![스크린샷 2020-03-23 오후 6 17 10](https://user-images.githubusercontent.com/58014147/77434073-a470fb80-6e23-11ea-920e-6cb116c64653.png)
 
-* Functional Type Lifecycle
-- Hooks을 사용하여 단순 Display용으로 사용하던 함수형 컴포넌트에서 'State'와 'LifeCycle', 'Reference'등의 클래스형 Component의 기능의 구현한 개념.
+### 7. Hooks
+- Hooks을 사용하여 단순 Display용으로 사용하던 함수형 컴포넌트에서 'State'와 'LifeCycle', 'Reference'등의 클래스형 Component의 기능의 구현한 API
 - 또한 Memoization등의 기능 또한 포함되어 클래스형보다 더 *직관적*이라는 장점을 가지고 있다.
-- const \[_stateVariable, _setStateFunction]\ = useState(...initStateValue)<br>
+- Syntax *useState*
+const \[_stateVariable, _setStateFunction]\ = useState(...initStateValue)<br>
 : 함수형 컴포넌트에서 React의 State의 값을 사용할 수 있게 해주는 Hooks의 핵심 인터페이스이며, useState()의 첫번째 인자로 State의 초기값을 설정 할 수 있다.
 ```javascript
 //#Set StateVariable
@@ -49,23 +87,26 @@ const [count, setCount] = useState(0);
 const [fruit, setFruit] = useState('banana');
 const [todos, setTodos] = useState({text : 'Learn Hooks'});
 ```
-- useEffect(_callback, _arrayStateVariable) <br>
-: Hooks을 통해 함수형 컴포넌트는 Lifecycle을 구현할 수 있다. 클래스형 컴포넌트와 다르게, Hooks에서는 useEffect로 Lifecycle을 관리 할 수 있다. 기본적으로 *render()* 가 실행되면 *useEffect* 가 함께 실행된다고 보면 된다. 그리고 Return되는 callBack을 통해 *componentWillUnmount()* 를 구현할 수 있다.<br>실제로는 모든 render요청에 대해, useEffect가 실행되니 사실 이 method의 퍼포먼스는 중요하다. 이를 위해 *useEffect*의 두번째 인자로 변경 사항이 있는 값들을 배열로 할당하여 해당 값들이 변경될 때만 Effect를 실행하게 할 수 있다.
+- Syntax *useEffect(_callback, _arrayStateVariable)* <br>
+: uesEffect는 *리액트 컴포넌트가 랜더링될 때마다* 특정 작업을 수행하도록 설정할 수 있는 Hook이다. 클래스형 컴포넌트의 componentDidMount와 componentDidUpdate를 합친 형태로 보아도 무방하다.
 ```javascript
 function HksLifecycle() {
     const [count, setCount] = useState(0);
 
     // useEffect, First Parameter is CallBack function
     useEffect(() => {
+            console.log('Complete Rendering');
             // 컴포넌트가 마운트 되고, setTimeout 함수를 호출한다.
             setTimeout(() => {
                 document.title = `You Clicked ${count} times`;
             }, 3000);
-            return () => window.removeEventListener('scroll', onScroll); // <--- Return callBack을 통해서 componetWillUnmount구현
+            return () => window.removeEventListener('scroll', onScroll); // 컴포넌트가 언마운트되기 전이나, 업데이트되기 직전에 어떠한 작업을
+                                                                         // 수행하고 싶다면 "return" 함수를 선언해 cleanup 함수를 반환
         },
         [count]); // <-- Second Parameter is 'StateVariable'
                         //  이렇게 하면 useEffect는 count state를 지켜보다가 count가 갱신되면 첫번째 callBack를 실행하게 된다.
                         //  변경 사항이 있는 값들(State) 배열로 보내어, 해당 값들이 변경될 때만 useEffect를 실행하게 만들면 된다.
+                        //  즉, 특정 값이 변경될 때만 호출하고 싶은 경우에, 해당 배열에 변수를 요소로 할다하면 된다.
         //[]); //<--- Second Parameter is 'Empty Array'
                   // useEffect 함수를 마운트되고 한번만 실행하게 하려면 두번째 인자로 빈 배열을 넣어주면 된다.
                   // 그렇지 않으면 state 값이 업데이트 될 경우 다시 한번 Rendering 해준다.
@@ -79,10 +120,10 @@ function HksLifecycle() {
         </div>
     )
 };
-
 export default Lifecycle;
 ```
-- useRef(ClassType: React.createRef())
+ 컴포넌트가 *언마운트되기 전*이나 *업데이트되기 직전*에 "어떠한 작업"을 수행하고 싶다면 useEffect에서 뒷정리(cleanup)함수를 반환해주면 된다.
+- Syntax *useRef(ClassType: React.createRef())*
 what is 'ref'?
 - 리액트 프로젝트 내부에서 DOM에 이름을 다는 방법을 Reference(ref)라고 한다.
 why used 'ref'?
@@ -129,13 +170,107 @@ function InputSample(){
 - useMemo & useCallback
 *useMemo*,*useCallback*은 memoize를 함수형 컴포넌트에서 사용할 수 있도록 만들어진 기능이다. 둘의 사용처는 비슷한데 차이점은 *useMemo*는 [계산된 값]을 가지고 있고 *useCallback*은 콜백으로 실행 할 수 있다는 차이를 가지고 있다. 두 API 다 첫번째 인자로 값을 리턴하는 콜백을 가져오고, 두번째 인자로 변경 여부를 평가하는 값들의 배열을 가져온다.
 
+- Syntax *useReducer*
+useReducer는 useState보다 더 다양한 컴포넌트 상황에 따라 *다양한 상태*를 다른 값으로 업데이트해 주고 싶을 때 사용하는 Hooks API<br>
+리듀서는 현재 상태(State), 그리고 업데이트를 위해 필요한 정보를 담은 액션(Action) 값을 전달받아 새로운 상태를 반환하는 함수<br>
+리듀서 함수에서 새로운 상태(Next State) 만들 때는 반드시 *상태 불변성(Immutabel)*을 지켜야한다.<br>
+```javascript
+function reducer(state, action){
+
+    return {...} // 불변성을 지키면서 업데이트한 새로운 상태를 반환 한다.
+};
+```
+액션(Action)객체 값은 주로 이러한 형태를 띄운다.
+```javascript
+{
+    type : 'INCREMENT',
+    // 다른 값이 더 필요하다면 추가로 들어간다.
+}
+```
+예제 코드#1
+useReducer의 첫번째 파라미터에는 Reducer Function을 할당하고, 두번째 파라미터에는 해당 리듀서의 Default 값을 할당한다.<br>
+이 Hooks API를 이용하면 *state 값과 dispatch함수*를 받아 오는데, state는 현재 가리키는 있는 상태고, dispatch는 Action을 발생시키는 함수 이다.
+```javascript
+import React, {useState, useEffect, useReducer} from 'react';
+
+function reducer(state, action) {
+    // action.type 값에 따라 다른 작업 수행
+    switch (action.type) {
+        case 'INCREMENT' :
+            return {value: state.value + 1};
+        case 'DECREMENT' :
+            return {value: state.value - 1};
+        default :
+            // 아무것도 해당하지 않을 때 기존 상태 변환
+            return state;
+    }
+}
+
+const Counter = () => {
+    const [state, dispatch] = useReducer(reducer, {value: 0});
+
+    return (
+        <div>
+            <p>현재 카운터 값은 <b>{state.value}</b></p>
+            <button onClick={() => dispatch({type:'INCREMENT'})}>+1</button>
+            <button onClick={() => dispatch({type:'DECREMENT'})}>-1</button>
+        </div>
+    );
+};
+
+export default Counter;
+```
+> useState 대신 *useReducer* API를 사용하게 되면 가장 큰 장점은 컴포넌트 업데이트 로직을 컴포넌트 바깥으로 빼낼수 있다는 점이다.
+
+예제코드#2
+2번째 예제코드는 inputBox의 상태를 관리하는 코드이다. 기존에는 inputBox가 여러 개여서 useState를 여러 번 사용했는데, useReducer를 사용하면 기존에 클래스형 컴포넌트에서 *input 태그에 name 값을 할당하고 e.target.name을 참조하여 setState를 해 준 것과 유사한 방식으로 처리할 수 있다.*<br>
+useReducer의 *Action은 그 어떤 값도 사용 가능하다.* 그래서 이번에는 이벤트 객체가 가지고 있는 target 값 자체를 액션값으로 사용했다.
+```javascript
+import React, {useReducer, useEffect} from 'react'
+
+function reducer(state, action) {
+    // onChange 이벤트핸들러에서 "dispatch"를 호출하게 되면 "reducer" 함수를 호출하게 되고,
+    // 현재 출력하고 있는 상태(State)와 액션(Action)의 값은 변화 하기 직전의 값이다.
+    console.log('state ::: ',state);
+    console.log('action ::: ',action);
+    return {
+        ...state,
+        [action.name]: action.value // == event.target.name : event.target.value 랑 동일한 코드이다.
+    };
+}
 
 
+const InfoEffect = () => {
+    const [state, dispatch] = useReducer(reducer, {
+        name : '',
+        nickname : ''
+    });
 
-* 마운팅 이벤트(Mounting Event)
-- 마운팅 이벤트 유형은 모두 실제 DOM에 컴포넌트를 추가하는 것에 대한 이벤트다.
-- componentWillMount()
-컴포넌트 라이프사이클에서 componentWillMount()는 *단 한번만* 실행된다. 실행 시점은 초기 렌더링 직전이다.ReactDOM.render()를 호출해서 React 엘리먼트를 브라우저에 렌더링하는 시점에서 componentWillMount()가 실행된다. 
+    useEffect(() => {
+        console.log('Complete Rendering');
+    });
+
+    const handlerChangeName = (e) => {
+        // Change State Value
+        dispatch(e.target);
+    };
+
+    const {name, nickname} = state;
+    return (
+        <div>
+            <div>
+                <input type="text" name="name" value={name} onChange={handlerChangeName}/>
+                <input value={nickname} type="text"/>
+            </div>
+            <div>
+                <b>이름 : {name}</b>
+            </div>
+        </div>
+    );
+};
+
+export default InfoEffect;
+```
 
 * 컴포넌트 반복
 - 자바스크립트 배열객체의 내장함수 *mapm()* 함수를 사용하여 반복되는 컴포넌트를 렌더링 할 수 있다.
@@ -199,7 +334,7 @@ export default ListExample;
 ```
 
 - key란?<br>
- 리액트에서 key는 Component 배열을 렌더링 했을 때 어떤 원소에 변동이 있었는지 알아내려고 사용한다. 예를 들어 유동적인 데이터를 다룰 때는 원소를 새로 생성할 수 도, 제거할 수 도, 수정할 수도 있다. key가 없을 때는 Virtual DOM을 비교하는 과정에서 리스트를 순차적으로 비교하면서 변화를 감지해야 한다.<br>
+ 리액트에서 key는 Component 배열을 렌더링 했을 때 *어떤 원소에 변동이 있었는지 알아내려고 사용한다.* 예를 들어 유동적인 데이터를 다룰 때는 원소를 새로 생성할 수 도, 제거할 수 도, 수정할 수도 있다. key가 없을 때는 Virtual DOM을 비교하는 과정에서 리스트를 순차적으로 비교하면서 변화를 감지해야 한다.<br>
 하지만, key가 존재하면 이 값을 사용하여 어떤 변화가 일어났는지 더욱 빠르게 확인 할 수 있다.
 
 - key값 설정<br>
@@ -218,7 +353,8 @@ const articleList = articles.map(article => (
 - 응용
  inputbox와 button 각각 1개 씩 추가한다. inputBox에 기입한 Text를 button을 클릭하게 되면 List(ul)태그에 li태그로 추가한다.<br>
 여기서 중요한 부분은 *names 배열에 새 항목을 추가할 때 기존 배열에 추가하는 것이 아니라, 새로운 배열을 생성해서 다시 재 할당하는 것이다.*
-> 불변성(Immutable) 유지라는 React Concept을 벗어나지 않기 위한 규칙
+> 불변성(Immutable) 유지라는 React Concept을 벗어나지 않기 위한 규칙<br>
+
 [기존 배열은 원본을 유지하고, 새로운 배열에 추가]
 ```javascript
 const srcArray = [1,2,3,4,5];
@@ -298,7 +434,7 @@ const ListUp = () => {
 
 export default ListUp;
 ```
-
+- Component 배열을 렌더링할 때는 key 값 설정에 항상 주의를 해야한다. 그리고 key 값은 중복되면 안된다(Unique).
 
 
 ## Environment 구축
