@@ -152,8 +152,7 @@ const processed = numbers.map((number,index) => {
 });
 console.log(processed); // 출력결과 : 1,4,9,16,25
 ```
-- 동일한 원리로 기존 배열로 컴포넌트로 구성된 배열을 생성할 수 있다.
-=> *Component가 요소가 되는 배열*을 생성할 수 있다.
+- 동일한 원리로 기존 배열로 컴포넌트로 구성된 배열을 생성할 수 있다. *Component가 요소가 되는 배열*을 생성할 수 있다.
 ```javascript
 // @JSX코드로 된 배열을 생성
 import React from 'react';
@@ -179,9 +178,10 @@ const List = (props) => {
 
 export default List;
 ```
-<br>
+
 - 2. Parnet Component에서 List Component import
-```javscript
+
+```javascript
 import React, {useState} from 'react';
 import List from './List';
 
