@@ -167,9 +167,186 @@ function InputSample(){
 ```
 
 - useContext
-- useMemo & useCallback
-*useMemo*,*useCallback*은 memoize를 함수형 컴포넌트에서 사용할 수 있도록 만들어진 기능이다. 둘의 사용처는 비슷한데 차이점은 *useMemo*는 [계산된 값]을 가지고 있고 *useCallback*은 콜백으로 실행 할 수 있다는 차이를 가지고 있다. 두 API 다 첫번째 인자로 값을 리턴하는 콜백을 가져오고, 두번째 인자로 변경 여부를 평가하는 값들의 배열을 가져온다.
+- Syntax *useMemo*
+useMemo를 사용하면 함수형 컴포넌트 내부에서 발생하는 연산을 최적화 할 수 있다.<br>
+아래 예제코드처럼 연산을 수행하게 되면 inputBox의 값만 변화 했지만, getAverage함수가 호출되어 필요없는 연산을 수행하게 된다. 그래서 useMemo를 사용하게 되면 
+*렌더링하는 과정에서 특정 값이 바뀌었을 때만 연산을 실행하고, 원하는 값이 바뀌지 않았다면 이전에 연산했던 결과를 다시 사용하는 방식이다*<br>
+예제코드#1
+```javascript
+import React, {useState} from 'react';
 
+const getAverage = numbers => {
+    console.log('평균 값 계산 중....');
+    if (numbers.length === 0) return 0;
+    const sum = numbers.reduce((a, b) => a + b);
+    return sum / numbers.length ;
+
+}
+
+const Average = () => {
+    const [list, setList] = useState([]);
+    const [number, setNumber] = useState('');
+
+    const handleChange = event => {
+        setNumber(event.target.value);
+    };
+
+    const onInsert = e => {
+        setList([
+            ...list,
+            number
+        ]);
+    };
+
+    return (
+        <div>
+            <input
+                value={number}
+                onChange={handleChange}
+            />
+            <button
+                onClick={onInsert}
+            >
+                등록
+            </button>
+            <ul>
+                {
+                    list.map((value,index) => (
+                        <li key={index}>{value}</li>
+                    ))
+                }
+            </ul>
+            <div>
+                <b>평균 : {getAverage(list)}</b>
+            </div>
+        </div>
+    )
+
+}
+
+export default Average;
+```
+예제코드#2<br>
+아래 코드처럼 useMemo를 사용하게 되면 특정한 값이 변경됐을 때만 연산을 수행하게 된다.
+```javascript
+import React, {useState, useMemo} from 'react';
+
+const getAverage = numbers => {
+    console.log('평균 값 계산 중....');
+    if (numbers.length === 0) return 0;
+    const sum = numbers.reduce((a, b) => a + b);
+    return sum / numbers.length ;
+
+};
+
+const Average = () => {
+    const [list, setList] = useState([]);
+    const [number, setNumber] = useState('');
+
+    const handleChange = event => {
+        setNumber(event.target.value);
+    };
+
+    const onInsert = e => {
+        setList([
+            ...list,
+            number
+        ]);
+        setNumber('');
+    };
+
+    const avg = useMemo(() => getAverage(list), [list]);
+
+    return (
+        <div>
+            <input
+                value={number}
+                onChange={handleChange}
+            />
+            <button
+                onClick={onInsert}
+            >
+                등록
+            </button>
+            <ul>
+                {
+                    list.map((value,index) => (
+                        <li key={index}>{value}</li>
+                    ))
+                }
+            </ul>
+            <div>
+                <b>평균 : {avg}</b>
+            </div>
+        </div>
+    )
+
+}
+
+export default Average;
+```
+
+- Snytax *useCallback*
+useCallback은 useMemo와 상당히 비슷한 API이다. 주로 렌더링 성능을 최적화 해야하는 상황에서 사용한다. 이 Hooks를 사용하게 되면 *이벤트 핸들러 함수*를 필요할 때만 *생성*할 수 있다.
+useMemo에서 구현한 Average Component 예제코드를 보면 handleChange와 onInsert라는 함수를 선언했는데, Average 컴퍼넌트가 리렌더링될 때마다 이 함수들이 새로 생성된다. 대부분의 경우 이러한 방식은 문제없지만, 컴포넌트의 렌더링이 자주 발생하거나 렌더링해야 할 컴포넌트의 개수가 많아지면 useCallback를 사용하는 것이 좋다. 성능 개선을 위해서
+@Hooks.useCallback(callback, \[Array, 어떤 값이 바뀌었을 때 함수를 새로 생성해야 하는지 명시\]);
+```javascript
+import React, {useState, useMemo} from 'react';
+
+const getAverage = numbers => {
+    console.log('평균 값 계산 중....');
+    if (numbers.length === 0) return 0;
+    const sum = numbers.reduce((a, b) => a + b);
+    return sum / numbers.length ;
+
+};
+
+const Average = () => {
+    const [list, setList] = useState([]);
+    const [number, setNumber] = useState('');
+
+    const handleChange = useCallback(event => {
+        setNumber(event.target.value);
+    }, []); // 빈 배열을 2번째 파라미터로 전달하면 컴포넌트가 처음 렌더링될 때만 함수 생성
+
+    const onInsert = useCallback(e => {
+        setList([
+            ...list,
+            number
+        ]);
+        setNumber('');
+    }, [number, list]); // number 또는 list가 바뀌었을 때만 함수 생성
+
+    const avg = useMemo(() => getAverage(list), [list]);
+
+    return (
+        <div>
+            <input
+                value={number}
+                onChange={handleChange}
+            />
+            <button
+                onClick={onInsert}
+            >
+                등록
+            </button>
+            <ul>
+                {
+                    list.map((value,index) => (
+                        <li key={index}>{value}</li>
+                    ))
+                }
+            </ul>
+            <div>
+                <b>평균 : {avg}</b>
+            </div>
+        </div>
+    )
+
+}
+
+export default Average;
+```
 - Syntax *useReducer*
 useReducer는 useState보다 더 다양한 컴포넌트 상황에 따라 *다양한 상태*를 다른 값으로 업데이트해 주고 싶을 때 사용하는 Hooks API<br>
 리듀서는 현재 상태(State), 그리고 업데이트를 위해 필요한 정보를 담은 액션(Action) 값을 전달받아 새로운 상태를 반환하는 함수<br>
