@@ -137,6 +137,165 @@ function InputSample(){
 - componentWillMount()
 컴포넌트 라이프사이클에서 componentWillMount()는 *단 한번만* 실행된다. 실행 시점은 초기 렌더링 직전이다.ReactDOM.render()를 호출해서 React 엘리먼트를 브라우저에 렌더링하는 시점에서 componentWillMount()가 실행된다. 
 
+* 컴포넌트 반복
+- 자바스크립트 배열객체의 내장함수 *mapm()* 함수를 사용하여 반복되는 컴포넌트를 렌더링 할 수 있다.
+@arr.map(callback, \[thisArg\]);
+callback => *새로운 배열의 요소*를 *생성하는 함수*로 파라미터는 3가지를 갖는다.
+- currentValue : 현재 처리하고 있는 배열의 요소
+- index : 현재 처리하고 있는 배열 요소의 index
+- array : 현재 처리하고 있는 배열
+thisArg : callback 함수 내부에서 사용할 this 레퍼런스
+```javascript
+const numbers = [1,2,3,4,5];
+const processed = numbers.map((number,index) => {
+    return number * number;
+});
+console.log(processed); // 출력결과 : 1,4,9,16,25
+```
+- 동일한 원리로 기존 배열로 컴포넌트로 구성된 배열을 생성할 수 있다.
+=> *Component가 요소가 되는 배열*을 생성할 수 있다.
+```javascript
+// @JSX코드로 된 배열을 생성
+import React from 'react';
+
+const IterationSample = () => {
+    const names = ['봄','여름','가을','겨울'];
+    const namesList = names.map((name,index) => <li key={index}>{name}</li>);
+    
+    return <ul>{namesList}</ul>;
+}
+
+export default IterationSample;
+```
+또는
+- 1. List Component 정의
+```javascript
+// @PATH : /component/List.js
+import React from 'react';
+
+const List = (props) => {
+    return <li key={props.key}>{props.children}</li>
+};
+
+export default List;
+```
+<br>
+- 2. Parnet Component에서 List Component import
+```javscript
+import React, {useState} from 'react';
+import List from './List';
+
+const ListExample = () => {
+    const names = ['Spring', 'Summer', 'Fall', 'Winter'];
+    const namesList = names.map((name,index) => {
+        return <List key={index}>{name}</List>
+    });
+
+    return <ul>{namesList}</ul>
+
+};
+
+export default ListExample;
+```
+
+- key란?
+ 리액트에서 key는 Component 배열을 렌더링 했을 때 어떤 원소에 변동이 있었는지 알아내려고 사용한다. 예를 들어 유동적인 데이터를 다룰 때는 원소를 새로 생성할 수 도, 제거할 수 도, 수정할 수도 있다. key가 없을 때는 Virtual DOM을 비교하는 과정에서 리스트를 순차적으로 비교하면서 변화를 감지해야 한다.<br>
+하지만, key가 존재하면 이 값을 사용하여 어떤 변화가 일어났는지 더욱 빠르게 확인 할 수 있다.
+
+- key값 설정
+ key값을 설정할 때는 map 함수의 인자로 전달되는 함수 내부에서 컴포넌트 props를 설정하듯이 설정하면 된다. key 값은 언제나 유일해야 한다. 따라서 데이터가 가진 고유값을 key 값으로 설정해야 한다.
+ 게시판의 게시물을 렌더링한다면 게시물 번호(ID)를 key 값으로 설정한다.
+```javascript
+const articleList = articles.map(article => (
+    <Article
+        title={article.title}
+        writer={article.writer}
+        key={article.id}
+    />
+));
+
+
+```
+- 응용
+ inputbox와 button 각각 1개 씩 추가한다. inputBox에 기입한 Text를 button을 클릭하게 되면 List(ul)태그에 li태그로 추가한다.<br>
+여기서 중요한 부분은 *names 배열에 새 항목을 추가할 때 기존 배열에 추가하는 것이 아니라, 새로운 배열을 생성해서 다시 재 할당하는 것이다.*
+> 불변성(Immutable) 유지라는 React Concept을 벗어나지 않기 위한 규칙
+[기존 배열은 원본을 유지하고, 새로운 배열에 추가]
+```javascript
+const srcArray = [1,2,3,4,5];
+const nextArray = srcArray.concat(6);
+console.log(srcArray);  // 출력결과 : 1, 2, 3, 4, 5
+console.log(nextArray); // 출력결과 : 1, 2, 3, 4, 5, 6
+```
+또는 ES6의 새롭게 추가된 Spread Syntax를 사용하면 좀 더 간결하게 코딩할 수 있다.
+```javascript
+const srcArray = [1,2,3,4,5];
+const nextArray = [
+    ...srcArray,
+    6,
+    7
+];
+console.log(srcArray);  // 출력결과 : 1, 2, 3, 4, 5
+console.log(nextArray); // 출력결과 : 1, 2, 3, 4, 5, 6
+```
+
+[전체코드]
+```javascript
+import React, {useState} from 'react';
+import List from './List';
+
+const ListUp = () => {
+    const [names, setNames] = useState(
+        [
+            {id: 1, text: 'Spring'},
+            {id: 2, text: 'Summer'},
+            {id: 3, text: 'Fall'},
+            {id: 4, text: 'Winter'}
+        ]
+    );
+
+    const [inputText, setInputText] = useState('');
+    const handleChange = event => setInputText(event.target.value);
+
+    const [nextId, setNextId] = useState(names.length);
+    const handleButtonClick = () => {
+        // 첫번째 State Variable "names"
+        setNames([
+            ...names,
+            {id: nextId + 1, text: inputText}
+        ]);
+
+        setNextId(nextId + 1);
+        setInputText('');
+    }
+
+    const namesList = names.map((name) => {
+        return <li key={name.key}>{name.text}</li>
+        //return <List key={name.id}>{name.text}</List>
+    });
+
+    return (
+        <div>
+            <ul>{namesList}</ul>
+            <input
+                type="text"
+                value={inputText}
+                onChange={handleChange}
+            />
+            <button
+                onClick={handleButtonClick}
+            >추가</button>
+
+        </div>
+
+    )
+
+};
+
+export default ListUp;
+```
+
+
 
 ## Environment 구축
 - Jack's Thinking<br>
@@ -189,6 +348,7 @@ $ xcode-select --install
   }
 }
 ```
+
 
 
 
